@@ -1,40 +1,62 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\DeviceScan;
 
+use App\DeviceScan\Processing\DocumentProcessor;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
-use Inertia\Response;
 use Symfony\Component\Process\Process;
 
 class UploadController extends Controller
 {
-    public function create(): Response
+    public function create(Request $request)
     {
-        return Inertia::render('DeviceScan/Upload');
+        $deviceType = $request->route('deviceType', 'module');
+
+        return Inertia::render('Library/Import/Upload', [
+            'deviceType' => $deviceType,
+        ]);
     }
 
-    public function store(Request $request): RedirectResponse
-    {
+    public function store(
+        Request $request,
+        DocumentProcessor $processor,
+    ): RedirectResponse {
         $validated = $request->validate([
-            'device_type' => ['required', 'string', 'in:module,inverter'],
+            'device_type' => ['required', 'string', 'in:module,string_inverter,central_inverter'],
             'datasheet' => ['required', 'file', 'mimes:pdf', 'max:25600'],
         ]);
 
-        $path = $request->file('datasheet')->store('device-scan/tmp', 'public');
+        $file = $request->file('datasheet');
 
-        session([
-            'device_scan.last_upload' => [
-                'device_type' => $validated['device_type'],
-                'path' => $path,
-                'url' => route('device-scan.preview'),
-                'preview_image_url' => route('device-scan.preview-image'),
-                'original_name' => $request->file('datasheet')->getClientOriginalName(),
-            ],
+        $path = $file->store('device-scan/tmp', 'public');
+
+        $absolutePath = Storage::disk('public')->path($path);
+
+        $result = $processor->processWithSource(
+            file: $absolutePath,
+            deviceType: $validated['device_type'],
+        );
+
+        $datasheet = $result['datasheet'];
+        $sourceDocument = $result['source_document'];
+
+        $request->session()->put('device_scan.last_upload', [
+            'device_type' => $validated['device_type'],
+            'path' => $path,
+            'url' => route('device-scan.preview'),
+            'preview_image_url' => route('device-scan.preview-image'),
+            'original_name' => $file->getClientOriginalName(),
+            'datasheet' => $datasheet->toArray(),
+            'source_document' => $sourceDocument->toArray(),
         ]);
+
+        $request->session()->save();
 
         return redirect()->route('device-scan.review', [
             'deviceType' => $validated['device_type'],
@@ -42,26 +64,26 @@ class UploadController extends Controller
     }
 
     public function preview()
-{
-    $upload = session('device_scan.last_upload');
+    {
+        $upload = session('device_scan.last_upload');
 
-    abort_unless($upload && isset($upload['path']), 404);
+        abort_unless($upload && isset($upload['path']), 404);
 
-    $disk = Storage::disk('public');
+        $disk = Storage::disk('public');
 
-    abort_unless($disk->exists($upload['path']), 404);
+        abort_unless($disk->exists($upload['path']), 404);
 
-    $absolutePath = $disk->path($upload['path']);
-    $filename = $this->safeFilename($upload['original_name'] ?? 'datasheet.pdf');
+        $absolutePath = $disk->path($upload['path']);
+        $filename = $this->safeFilename($upload['original_name'] ?? 'datasheet.pdf');
 
-    return response()->make(file_get_contents($absolutePath), 200, [
-        'Content-Type' => 'application/pdf',
-        'Content-Disposition' => 'inline; filename="'.$filename.'"',
-        'Content-Length' => (string) filesize($absolutePath),
-        'Cache-Control' => 'private, max-age=3600',
-        'X-Content-Type-Options' => 'nosniff',
-    ]);
-}
+        return response()->make(file_get_contents($absolutePath), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$filename.'"',
+            'Content-Length' => (string) filesize($absolutePath),
+            'Cache-Control' => 'private, max-age=3600',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
 
     public function previewImage()
     {

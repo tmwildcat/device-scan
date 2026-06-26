@@ -77,6 +77,6 @@ onBeforeUnmount(() => {
 <template>
     <div
         ref="container"
-        class="h-full min-h-[600px] w-full overflow-auto rounded-xl bg-slate-100 p-2 dark:bg-slate-950"
+        class="h-[520px] w-full overflow-auto rounded-xl bg-slate-100 p-2 dark:bg-slate-950"
     />
 </template>
