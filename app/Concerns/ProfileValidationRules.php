@@ -18,6 +18,7 @@ trait ProfileValidationRules
         return [
             'name' => $this->nameRules(),
             'email' => $this->emailRules($userId),
+            'preferred_locale' => ['nullable', 'string', Rule::in(array_keys(config('linewatt-library.locales', ['en' => 'English'])))],
         ];
     }
 

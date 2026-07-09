@@ -27,3 +27,13 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# DeviceScan training corpus (local only)
+/storage/app/private/device-scan/corpus/**
+
+# Keep folder structure
+!/storage/app/private/device-scan/corpus/.gitkeep
+!/storage/app/private/device-scan/corpus/modules/
+!/storage/app/private/device-scan/corpus/modules/.gitkeep
+!/storage/app/private/device-scan/corpus/inverters/
+!/storage/app/private/device-scan/corpus/inverters/.gitkeep

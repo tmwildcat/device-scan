@@ -1,20 +1,17 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import {
-    BookOpen,
-    Boxes,
-    ClipboardCheck,
-    FileInput,
+    Building2,
+    FileDown,
     FolderGit2,
-    GitCompare,
-    LayoutDashboard,
-    LayoutGrid,
+    FolderKanban,
+    Home,
     Library,
-    NotebookTabs,
-    PackageCheck,
-    PlugZap,
-    SolarPanel,
+    Search,
+    Settings,
+    Upload,
 } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
@@ -29,81 +26,92 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/dashboard',
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Equipment',
-        href: '/library/equipment/modules',
-        icon: Boxes,
-        children: [
-            {
-                title: 'PV Modules',
-                href: '/library/equipment/modules',
-                icon: SolarPanel,
-            },
-            {
-                title: 'String Inverters',
-                href: '/library/equipment/string-inverters',
-                icon: PlugZap,
-            },
-            {
-                title: 'Central Inverters',
-                href: '/library/equipment/central-inverters',
-                icon: Boxes,
-            },
-        ],
-    },
-    {
-        title: 'Import',
-        href: '/library/import/module',
-        icon: FileInput,
-        children: [
-            {
-                title: 'PV Modules',
-                href: '/library/import/module',
-                icon: SolarPanel,
-            },
-            {
-                title: 'String Inverters',
-                href: '/library/import/string-inverter',
-                icon: PlugZap,
-            },
-            {
-                title: 'Central Inverters',
-                href: '/library/import/central-inverter',
-                icon: Boxes,
-            },
-        ],
-    },
-    {
-        title: 'Export',
-        href: '/library/export',
-        icon: PackageCheck,
-    },
-    {
-        title: 'Compare',
-        href: '/library/compare',
-        icon: GitCompare,
-    },
-];
+const page = usePage();
+const user = computed(() => (page.props as any).auth?.user ?? null);
+const entitlements = computed<string[]>(() => user.value?.entitlements ?? ['library.search', 'library.view_record']);
+const workspaces = computed(() => user.value?.workspaces ?? {});
+
+const mainNavItems = computed<NavItem[]>(() => {
+    const items: NavItem[] = [
+        {
+            title: 'Home',
+            href: '/',
+            icon: Home,
+        },
+    ];
+
+    if (entitlements.value.includes('library.search')) {
+        items.push({
+            title: 'Search',
+            href: '/search',
+            icon: Search,
+        });
+    }
+
+    if (workspaces.value.my_library === true) {
+        items.push({
+            title: 'My Private Datasets',
+            href: '/my-library',
+            icon: Library,
+        });
+    }
+
+    if (workspaces.value.central === true) {
+        items.push({
+            title: 'Library Admin',
+            href: '/admin/library',
+            icon: FolderKanban,
+        });
+    }
+
+    if (workspaces.value.partner === true) {
+        items.push({
+            title: 'Manufacturer Admin',
+            href: '/admin/manufacturer',
+            icon: Building2,
+        });
+    }
+
+    if (workspaces.value.platform === true) {
+        items.push({
+            title: 'Platform Admin',
+            href: '/admin/platform',
+            icon: FolderKanban,
+        });
+    }
+
+    if (entitlements.value.includes('library.private_upload') || entitlements.value.includes('central.manage') || entitlements.value.includes('partner.manage_products')) {
+        items.push({
+            title: 'Upload',
+            href: user.value?.workspaces?.central ? '/admin/library' : user.value?.workspaces?.partner ? '/admin/manufacturer' : '/my-library',
+            icon: Upload,
+        });
+    }
+
+    if (entitlements.value.includes('library.export')) {
+        items.push({
+            title: 'Exports',
+            href: user.value?.workspaces?.central ? '/admin/library' : user.value?.workspaces?.partner ? '/admin/manufacturer' : '/my-library',
+            icon: FileDown,
+        });
+    }
+
+    items.push({
+        title: 'Settings',
+        href: '/settings/profile',
+        icon: Settings,
+    });
+
+    return items;
+});
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'Repository',
-        href: 'https://github.com/laravel/vue-starter-kit',
+        title: 'LineWatt Library',
+        href: '/',
         icon: FolderGit2,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
     },
 ];
 </script>
@@ -114,7 +122,7 @@ const footerNavItems: NavItem[] = [
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="dashboard()">
+                        <Link href="/">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>

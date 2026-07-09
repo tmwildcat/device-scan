@@ -28,7 +28,6 @@ final class PageRenderer
 
         foreach ($document->pages as $page) {
             $pages[] = $this->renderPage(
-                $document,
                 $page,
                 $path,
                 $previewDir,
@@ -47,7 +46,6 @@ final class PageRenderer
     }
 
     private function renderPage(
-        SourceDocument $document,
         Page $page,
         string $pdfPath,
         string $previewDir,
@@ -90,13 +88,18 @@ final class PageRenderer
             }
         }
 
-        return new Page(
+       return new Page(
             number: $page->number,
             text: $page->text,
             imageUrl: '/storage/device-scan/previews/'.basename($imagePath),
             tables: $page->tables,
             images: $page->images,
-            metadata: $page->metadata,
+            sections: $page->sections,
+            ocr: $page->ocr,
+            metadata: [
+                ...$page->metadata,
+                'rendered_image_path' => $imagePath,
+            ],
         );
     }
 }

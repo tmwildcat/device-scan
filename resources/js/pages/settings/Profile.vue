@@ -9,6 +9,7 @@ import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useLineWattI18n } from '@/lib/linewatt-i18n';
 import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
 
@@ -25,18 +26,19 @@ defineOptions({
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
+const { supportedLocales, t } = useLineWattI18n();
 </script>
 
 <template>
-    <Head title="Profile settings" />
+    <Head :title="t('profile.title')" />
 
-    <h1 class="sr-only">Profile settings</h1>
+    <h1 class="sr-only">{{ t('profile.title') }}</h1>
 
     <div class="flex flex-col space-y-6">
         <Heading
             variant="small"
-            title="Profile"
-            description="Update your name and email address"
+            :title="t('profile.heading')"
+            :description="t('profile.description')"
         />
 
         <Form
@@ -45,7 +47,7 @@ const user = computed(() => page.props.auth.user);
             v-slot="{ errors, processing }"
         >
             <div class="grid gap-2">
-                <Label for="name">Name</Label>
+                <Label for="name">{{ t('profile.name') }}</Label>
                 <Input
                     id="name"
                     class="mt-1 block w-full"
@@ -59,7 +61,7 @@ const user = computed(() => page.props.auth.user);
             </div>
 
             <div class="grid gap-2">
-                <Label for="email">Email address</Label>
+                <Label for="email">{{ t('profile.email') }}</Label>
                 <Input
                     id="email"
                     type="email"
@@ -71,6 +73,26 @@ const user = computed(() => page.props.auth.user);
                     placeholder="Email address"
                 />
                 <InputError class="mt-2" :message="errors.email" />
+            </div>
+
+            <div class="grid gap-2">
+                <Label for="preferred_locale">{{ t('profile.language') }}</Label>
+                <select
+                    id="preferred_locale"
+                    name="preferred_locale"
+                    class="mt-1 block h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                    :value="user.preferred_locale || 'en'"
+                >
+                    <option
+                        v-for="(label, value) in supportedLocales"
+                        :key="value"
+                        :value="value"
+                    >
+                        {{ label }}
+                    </option>
+                </select>
+                <p class="text-xs text-muted-foreground">{{ t('profile.languageHelp') }}</p>
+                <InputError class="mt-2" :message="errors.preferred_locale" />
             </div>
 
             <div v-if="page.props.mustVerifyEmail && !user.email_verified_at">
@@ -94,9 +116,7 @@ const user = computed(() => page.props.auth.user);
             </div>
 
             <div class="flex items-center gap-4">
-                <Button :disabled="processing" data-test="update-profile-button"
-                    >Save</Button
-                >
+                <Button :disabled="processing" data-test="update-profile-button">{{ t('profile.save') }}</Button>
             </div>
         </Form>
     </div>

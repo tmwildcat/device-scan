@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\DeviceScan\Processing\Document;
 
+use App\DeviceScan\Processing\Ocr\OcrResult;
+
 final readonly class Page
 {
     public function __construct(
@@ -12,6 +14,8 @@ final readonly class Page
         public ?string $imageUrl = null,
         public array $tables = [],
         public array $images = [],
+        public array $sections = [],
+        public ?OcrResult $ocr = null,
         public array $metadata = [],
     ) {}
 
@@ -21,8 +25,19 @@ final readonly class Page
             'number' => $this->number,
             'text' => $this->text?->toArray(),
             'image_url' => $this->imageUrl,
-            'tables' => $this->tables,
-            'images' => $this->images,
+            'tables' => array_map(
+                fn ($table) => method_exists($table, 'toArray') ? $table->toArray() : $table,
+                $this->tables,
+            ),
+            'images' => array_map(
+                fn ($image) => method_exists($image, 'toArray') ? $image->toArray() : $image,
+                $this->images,
+            ),
+            'sections' => array_map(
+                fn ($section) => method_exists($section, 'toArray') ? $section->toArray() : $section,
+                $this->sections,
+            ),
+            'ocr' => $this->ocr?->toArray(),
             'metadata' => $this->metadata,
         ];
     }

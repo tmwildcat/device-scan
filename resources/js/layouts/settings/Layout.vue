@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3';
+import WorkspaceNavigation from '@/components/linewatt/WorkspaceNavigation.vue';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { Link } from '@inertiajs/vue3';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
@@ -10,7 +10,7 @@ import { edit as editProfile } from '@/routes/profile';
 import { edit as editSecurity } from '@/routes/security';
 import type { NavItem } from '@/types';
 
-const sidebarNavItems: NavItem[] = [
+const settingsNavItems: NavItem[] = [
     {
         title: 'Profile',
         href: editProfile(),
@@ -29,43 +29,43 @@ const { isCurrentOrParentUrl } = useCurrentUrl();
 </script>
 
 <template>
-    <div class="px-4 py-6">
-        <Heading
-            title="Settings"
-            description="Manage your profile and account settings"
-        />
+    <div class="min-h-screen bg-slate-50 text-slate-950">
+        <WorkspaceNavigation />
 
-        <div class="flex flex-col lg:flex-row lg:space-x-12">
-            <aside class="w-full max-w-xl lg:w-48">
-                <nav
-                    class="flex flex-col space-y-1 space-x-0"
-                    aria-label="Settings"
-                >
-                    <Button
-                        v-for="item in sidebarNavItems"
-                        :key="toUrl(item.href)"
-                        variant="ghost"
-                        :class="[
-                            'w-full justify-start',
-                            { 'bg-muted': isCurrentOrParentUrl(item.href) },
-                        ]"
-                        as-child
-                    >
-                        <Link :href="item.href">
-                            <component :is="item.icon" class="h-4 w-4" />
-                            {{ item.title }}
-                        </Link>
-                    </Button>
-                </nav>
-            </aside>
+        <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+            <section class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+                <Heading
+                    title="Settings"
+                    description="Manage your LineWatt Library profile, security and appearance preferences."
+                />
 
-            <Separator class="my-6 lg:hidden" />
+                <div class="mt-8 grid gap-8 lg:grid-cols-[220px_1fr]">
+                    <aside>
+                        <nav class="grid gap-2" aria-label="Settings">
+                            <Button
+                                v-for="item in settingsNavItems"
+                                :key="toUrl(item.href)"
+                                variant="ghost"
+                                :class="[
+                                    'justify-start rounded-md',
+                                    { 'bg-slate-100 text-slate-950': isCurrentOrParentUrl(item.href) },
+                                ]"
+                                as-child
+                            >
+                                <Link :href="item.href">
+                                    {{ item.title }}
+                                </Link>
+                            </Button>
+                        </nav>
+                    </aside>
 
-            <div class="flex-1 md:max-w-2xl">
-                <section class="max-w-xl space-y-12">
-                    <slot />
-                </section>
-            </div>
-        </div>
+                    <div class="max-w-2xl">
+                        <section class="space-y-12">
+                            <slot />
+                        </section>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 </template>

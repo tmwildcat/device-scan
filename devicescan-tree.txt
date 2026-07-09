@@ -1,0 +1,140 @@
+app/DeviceScan
+├── Actions
+├── Csv
+├── DTO
+├── Datasheets
+│   ├── Datasheet.php
+│   ├── DatasheetAttachment.php
+│   ├── DatasheetCell.php
+│   ├── DatasheetChart.php
+│   ├── DatasheetImage.php
+│   ├── DatasheetModelGroup.php
+│   ├── DatasheetRow.php
+│   └── DatasheetTable.php
+├── Detection
+│   └── EngineeringMatrixDetector.php
+├── Dictionary
+│   ├── Aliases
+│   ├── Fields
+│   ├── Registries
+│   └── Schemas
+├── Exceptions
+├── Export
+├── Extraction
+│   ├── Contracts
+│   ├── Matrix
+│   │   ├── BatteryMatrixExtractor.php
+│   │   ├── InverterMatrixExtractor.php
+│   │   ├── ModuleElectricalMatrixExtractor.php
+│   │   ├── ModuleMatrixExtractor.php
+│   │   ├── PcsMatrixExtractor.php
+│   │   ├── ResolvedEngineeringSeries.php
+│   │   └── ResolvedEngineeringValues.php
+│   ├── Ocr
+│   ├── Pdf
+│   │   ├── PdfPage.php
+│   │   ├── PdfTextExtractor.php
+│   │   └── PdfTextResult.php
+│   └── Text
+│       ├── AliasCandidateExtractor.php
+│       ├── HybridCandidateExtractor.php
+│       └── ModuleTableCandidateExtractor.php
+├── Metadata
+│   ├── CandidateCollection.php
+│   ├── CandidateValue.php
+│   ├── DeviceMetadata.php
+│   ├── EngineeringField.php
+│   ├── InverterMetadata.php
+│   ├── MetadataResult.php
+│   ├── ModuleMetadata.php
+│   ├── ReviewSchemas
+│   └── SourceType.php
+├── Parsing
+│   ├── EngineeringMatrixParser.php
+│   └── Module
+│       └── ModuleTypeHeaderParser.php
+├── Processing
+│   ├── Analysis
+│   │   └── PageAnalysisProcessor.php
+│   ├── DatasheetAssembler.php
+│   ├── Document
+│   │   ├── Page.php
+│   │   ├── PageText.php
+│   │   └── SourceDocument.php
+│   ├── DocumentProcessor.php
+│   ├── Modules
+│   │   ├── CanonicalModuleElectricalCharacteristics.php
+│   │   ├── CanonicalModuleElectricalVariant.php
+│   │   ├── ModuleElectricalCharacteristicsParser.php
+│   │   └── ModuleElectricalProcessor.php
+│   ├── Native
+│   │   ├── Analysis
+│   │   │   ├── NativeColumnDetector.php
+│   │   │   ├── NativeGridBuilder.php
+│   │   │   ├── NativeGridDetector.php
+│   │   │   ├── NativeLineBuilder.php
+│   │   │   ├── NativeTableRegionDetector.php
+│   │   │   └── NativeTextRunBuilder.php
+│   │   ├── DTO
+│   │   │   ├── NativeColumn.php
+│   │   │   ├── NativeLine.php
+│   │   │   ├── NativeTextRun.php
+│   │   │   └── NativeWord.php
+│   │   ├── Extraction
+│   │   └── PopplerNativeWordExtractor.php
+│   ├── Ocr
+│   │   ├── EngineeringBlockClassifier.php
+│   │   ├── OcrBlock.php
+│   │   ├── OcrBlockBuilder.php
+│   │   ├── OcrLayoutAnalyzer.php
+│   │   ├── OcrLine.php
+│   │   ├── OcrResult.php
+│   │   ├── OcrWord.php
+│   │   └── PageOcrExtractor.php
+│   ├── PageRenderer.php
+│   ├── PdfLoader.php
+│   ├── SectionDetector.php
+│   ├── Sections
+│   │   └── DetectedSection.php
+│   ├── TableDetector.php
+│   ├── Tables
+│   │   ├── Canonical
+│   │   │   ├── CanonicalGridDebugAnnotator.php
+│   │   │   ├── Dictionary
+│   │   │   │   └── ModuleDictionary.php
+│   │   │   ├── HeaderDetectionResult.php
+│   │   │   ├── HeaderDetector.php
+│   │   │   └── ParameterNormalizer.php
+│   │   ├── DTO
+│   │   │   ├── TableCell.php
+│   │   │   ├── TableGrid.php
+│   │   │   └── TableRegion.php
+│   │   ├── DetectedTable.php
+│   │   ├── DetectedTableCell.php
+│   │   ├── DetectedTableRow.php
+│   │   ├── Engineering
+│   │   │   ├── EngineeringTable.php
+│   │   │   ├── EngineeringTableInterpreter.php
+│   │   │   ├── EngineeringTableRow.php
+│   │   │   └── NativeTextEngineeringTableExtractor.php
+│   │   ├── EngineeringPropertyTableExtractor.php
+│   │   ├── Fusion
+│   │   │   ├── HybridCellTextFusion.php
+│   │   │   └── HybridTableRegionDetector.php
+│   │   ├── Geometry
+│   │   │   ├── GridDetector.php
+│   │   │   ├── TableRegionDetector.php
+│   │   │   ├── TextRun.php
+│   │   │   └── TextRunBuilder.php
+│   │   ├── Hybrid
+│   │   │   └── NativeTextGridProjector.php
+│   │   └── Modules
+│   │       ├── ModuleElectricalMatrixExtractor.php
+│   │       └── ModuleMechanicalTableExtractor.php
+│   └── TextExtractor.php
+├── Services
+├── Support
+└── Validation
+    └── ModuleElectricalSanityValidator.php
+
+45 directories, 93 files

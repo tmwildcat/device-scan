@@ -38,8 +38,8 @@ class UploadController extends Controller
 
         $absolutePath = Storage::disk('public')->path($path);
 
-        $result = $processor->processWithSource(
-            file: $absolutePath,
+       $result = $processor->processWithSource(
+            file: $file,
             deviceType: $validated['device_type'],
         );
 

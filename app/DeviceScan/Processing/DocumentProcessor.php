@@ -7,12 +7,16 @@ namespace App\DeviceScan\Processing;
 use App\DeviceScan\Datasheets\Datasheet;
 use Illuminate\Http\UploadedFile;
 
+use App\DeviceScan\Processing\Analysis\PageAnalysisProcessor;
+
 final class DocumentProcessor
 {
     public function __construct(
         private readonly PdfLoader $pdfLoader,
         private readonly TextExtractor $textExtractor,
         private readonly PageRenderer $pageRenderer,
+        private readonly PageAnalysisProcessor $pageAnalysisProcessor,
+        private readonly SectionDetector $sectionDetector,
         private readonly TableDetector $tableDetector,
         private readonly DatasheetAssembler $datasheetAssembler,
     ) {}
@@ -30,7 +34,16 @@ final class DocumentProcessor
 
         $document = $this->pageRenderer->render($document);
 
-        $document = $this->tableDetector->detect($document);
+        $document = $this->pageAnalysisProcessor->process($document);
+
+        $document = $this->sectionDetector->detect($document);
+
+
+
+        $document = $this->tableDetector->detect(
+            document: $document,
+            deviceType: $deviceType,
+        );
 
         return [
             'source_document' => $document,

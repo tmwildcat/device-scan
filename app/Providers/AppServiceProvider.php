@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\LineWatt\Uploads\ClamAvMalwareScanner;
+use App\LineWatt\Uploads\MalwareScanner;
+use App\LineWatt\Uploads\NullMalwareScanner;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +18,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(MalwareScanner::class, function (): MalwareScanner {
+            return config('linewatt-library.upload.malware_scan.driver') === 'clamav'
+                ? new ClamAvMalwareScanner()
+                : new NullMalwareScanner();
+        });
     }
 
     /**

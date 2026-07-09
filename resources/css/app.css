@@ -170,3 +170,98 @@
         @apply bg-background text-foreground;
     }
 }
+
+/*
+  LineWatt Library currently uses a pragmatic Tailwind utility surface. These
+  overrides restore application-wide dark theme support for the newer workspace
+  screens without forcing every page to duplicate dark: classes.
+*/
+@layer utilities {
+    .dark .bg-slate-50 {
+        background-color: rgb(2 6 23) !important;
+    }
+
+    .dark .bg-white,
+    .dark .bg-white\/95 {
+        background-color: rgb(15 23 42) !important;
+    }
+
+    .dark .bg-slate-100 {
+        background-color: rgb(30 41 59) !important;
+    }
+
+    .dark .bg-slate-200 {
+        background-color: rgb(51 65 85) !important;
+    }
+
+    .dark .bg-slate-950 {
+        background-color: rgb(4 120 87) !important;
+    }
+
+    .dark .hover\:bg-slate-50:hover,
+    .dark .hover\:bg-slate-100:hover,
+    .dark .hover\:bg-white:hover {
+        background-color: rgb(30 41 59) !important;
+    }
+
+    .dark .hover\:bg-slate-800:hover {
+        background-color: rgb(5 150 105) !important;
+    }
+
+    .dark .border-slate-100,
+    .dark .border-slate-200,
+    .dark .border-slate-300 {
+        border-color: rgb(51 65 85) !important;
+    }
+
+    .dark .border-dashed.border-slate-300 {
+        border-color: rgb(71 85 105) !important;
+    }
+
+    .dark .text-slate-950,
+    .dark .text-slate-900 {
+        color: rgb(248 250 252) !important;
+    }
+
+    .dark .text-slate-800,
+    .dark .text-slate-700 {
+        color: rgb(203 213 225) !important;
+    }
+
+    .dark .text-slate-600,
+    .dark .text-slate-500 {
+        color: rgb(148 163 184) !important;
+    }
+
+    .dark .text-slate-400 {
+        color: rgb(100 116 139) !important;
+    }
+
+    .dark .placeholder\:text-slate-400::placeholder {
+        color: rgb(100 116 139) !important;
+    }
+
+    .dark .bg-emerald-50 {
+        background-color: rgb(6 78 59 / 0.42) !important;
+    }
+
+    .dark .text-emerald-700,
+    .dark .text-emerald-800 {
+        color: rgb(110 231 183) !important;
+    }
+
+    .dark .border-emerald-200 {
+        border-color: rgb(6 95 70) !important;
+    }
+
+    .dark input,
+    .dark select,
+    .dark textarea {
+        color: rgb(248 250 252);
+    }
+
+    .dark input::placeholder,
+    .dark textarea::placeholder {
+        color: rgb(100 116 139);
+    }
+}

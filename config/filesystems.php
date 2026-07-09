@@ -60,6 +60,19 @@ return [
             'report' => false,
         ],
 
+        'swefs' => [
+            'driver' => 's3',
+            'key' => env('LINEWATT_STORAGE_ACCESS_KEY_ID', env('AWS_ACCESS_KEY_ID')),
+            'secret' => env('LINEWATT_STORAGE_SECRET_ACCESS_KEY', env('AWS_SECRET_ACCESS_KEY')),
+            'region' => env('LINEWATT_STORAGE_DEFAULT_REGION', env('AWS_DEFAULT_REGION')),
+            'bucket' => env('LINEWATT_STORAGE_BUCKET', env('AWS_BUCKET')),
+            'url' => env('LINEWATT_STORAGE_URL'),
+            'endpoint' => env('LINEWATT_STORAGE_ENDPOINT', env('AWS_ENDPOINT')),
+            'use_path_style_endpoint' => env('LINEWATT_STORAGE_USE_PATH_STYLE_ENDPOINT', env('AWS_USE_PATH_STYLE_ENDPOINT', false)),
+            'throw' => false,
+            'report' => false,
+        ],
+
     ],
 
     /*
