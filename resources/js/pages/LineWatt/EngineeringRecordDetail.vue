@@ -3,7 +3,7 @@ import EntitlementDiagnostics from '@/components/linewatt/EntitlementDiagnostics
 import EngineeringFieldTable from '@/components/linewatt/EngineeringFieldTable.vue';
 import LifecycleStatusBadge from '@/components/linewatt/LifecycleStatusBadge.vue';
 import PlaceholderAction from '@/components/linewatt/PlaceholderAction.vue';
-import WorkspaceNavigation from '@/components/linewatt/WorkspaceNavigation.vue';
+import PublicSiteLayout from '@/components/linewatt/PublicSiteLayout.vue';
 import { useLineWattI18n } from '@/lib/linewatt-i18n';
 import { Head, Link } from '@inertiajs/vue3';
 import { Download, GitCompare, ShieldCheck } from 'lucide-vue-next';
@@ -283,10 +283,8 @@ function sourceRows(source: Record<string, any> | undefined | null): TableRow[] 
 <template>
     <Head :title="record.display_name || t('compare.engineeringRecord')" />
 
-    <div class="min-h-screen bg-slate-50 text-slate-950" :dir="dir">
-        <WorkspaceNavigation />
-
-        <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <PublicSiteLayout :dir="dir">
+        <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
             <div class="mb-6">
                 <Link href="/search" class="text-sm font-bold text-emerald-700 hover:text-emerald-800">
                     {{ t('detail.backToSearch') }}
@@ -604,6 +602,6 @@ function sourceRows(source: Record<string, any> | undefined | null): TableRow[] 
                     </div>
                 </div>
             </section>
-        </main>
-    </div>
+        </div>
+    </PublicSiteLayout>
 </template>

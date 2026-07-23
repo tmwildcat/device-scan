@@ -63,6 +63,12 @@ class EntitlementChecker
             && $user->role === LineWattRole::SUPER_ADMIN;
     }
 
+    public function canAccessLegalGovernance(?User $user): bool
+    {
+        return $user instanceof User
+            && $user->hasLegalPermission('legal.dashboard.view');
+    }
+
     public function canAccessBusinessAdmin(?User $user): bool
     {
         return $user instanceof User
@@ -116,7 +122,11 @@ class EntitlementChecker
         }
 
         if ($this->canAccessPlatformAdmin($user) && $user->role === LineWattRole::SUPER_ADMIN) {
-            return '/admin/platform';
+            return route('admin.platform', absolute: false);
+        }
+
+        if ($this->canAccessLegalGovernance($user) && in_array($user->role, [LineWattRole::LEGAL_COUNSEL, LineWattRole::LEGAL_PUBLISHER], true)) {
+            return route('legal-governance.dashboard', absolute: false);
         }
 
         if ($this->canAccessBusinessAdmin($user) && $user->role === LineWattRole::ADMIN) {

@@ -26,6 +26,7 @@ class PlatformServiceSeeder extends Seeder
 
         return [
             [
+                'uuid' => '66666666-0000-4000-8000-000000000001',
                 'name' => 'Internal Library API',
                 'service_key' => 'internal-library-api',
                 'service_type' => 'internal_api',
@@ -37,6 +38,7 @@ class PlatformServiceSeeder extends Seeder
                 'health_check_url' => '/api/internal/health',
             ],
             [
+                'uuid' => '66666666-0000-4000-8000-000000000002',
                 'name' => 'MCP Gateway',
                 'service_key' => 'mcp-gateway',
                 'service_type' => 'mcp_gateway',
@@ -49,6 +51,7 @@ class PlatformServiceSeeder extends Seeder
                 'metadata' => ['public_exposure' => false, 'execution' => 'placeholder'],
             ],
             [
+                'uuid' => '66666666-0000-4000-8000-000000000003',
                 'name' => 'Module Compiler',
                 'service_key' => 'module-compiler',
                 'service_type' => 'compiler',
@@ -58,6 +61,7 @@ class PlatformServiceSeeder extends Seeder
                 'required_scopes' => ['library.private_compile'],
             ],
             [
+                'uuid' => '66666666-0000-4000-8000-000000000004',
                 'name' => 'Inverter Compiler',
                 'service_key' => 'inverter-compiler',
                 'service_type' => 'compiler',
@@ -67,6 +71,7 @@ class PlatformServiceSeeder extends Seeder
                 'required_scopes' => ['library.private_compile'],
             ],
             [
+                'uuid' => '66666666-0000-4000-8000-000000000005',
                 'name' => 'Object Storage',
                 'service_key' => 'object-storage',
                 'service_type' => 'storage',
@@ -76,6 +81,7 @@ class PlatformServiceSeeder extends Seeder
                 'required_scopes' => ['library.storage'],
             ],
             [
+                'uuid' => '66666666-0000-4000-8000-000000000006',
                 'name' => 'Email Delivery',
                 'service_key' => 'email-delivery',
                 'service_type' => 'email',
@@ -85,6 +91,7 @@ class PlatformServiceSeeder extends Seeder
                 'required_scopes' => ['library.notifications'],
             ],
             [
+                'uuid' => '66666666-0000-4000-8000-000000000007',
                 'name' => 'Notification Service',
                 'service_key' => 'notification-service',
                 'service_type' => 'notification',
@@ -94,6 +101,7 @@ class PlatformServiceSeeder extends Seeder
                 'required_scopes' => ['library.notifications'],
             ],
             [
+                'uuid' => '66666666-0000-4000-8000-000000000008',
                 'name' => 'Search Index',
                 'service_key' => 'search-index',
                 'service_type' => 'search_index',

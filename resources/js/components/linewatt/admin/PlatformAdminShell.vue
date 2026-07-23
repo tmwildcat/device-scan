@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AdminShell from './AdminShell.vue';
 
-defineProps<{
+const props = defineProps<{
     title: string;
     subtitle?: string | null;
     breadcrumbs?: Array<{ label: string; href?: string | null }>;
@@ -9,6 +9,7 @@ defineProps<{
     roleLabel?: string | null;
     environment?: string | null;
     health?: string | null;
+    legalGovernanceHref?: string;
 }>();
 
 const navItems = [
@@ -17,6 +18,7 @@ const navItems = [
         href: '/admin/platform',
         children: [
             { label: 'Dashboard', href: '/admin/platform' },
+            { label: 'Legal Governance', href: props.legalGovernanceHref ?? '/admin/legal-governance' },
             { label: 'System Health', href: '/admin/platform/system-health' },
             { label: 'Security', href: '/admin/platform/security' },
             { label: 'Storage', href: '/admin/platform/storage' },

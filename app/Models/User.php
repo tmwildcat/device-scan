@@ -3,9 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
 use App\LineWatt\Access\EntitlementChecker;
 use App\LineWatt\Access\LineWattRole;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -108,6 +108,16 @@ class User extends Authenticatable implements PasskeyUser
     public function canAccessPartnerPortal(): bool
     {
         return app(EntitlementChecker::class)->canAccessPartnerPortal($this);
+    }
+
+    public function hasLegalPermission(string $permission): bool
+    {
+        if ($this->role === LineWattRole::SUPER_ADMIN) {
+            return true;
+        }
+
+        return in_array($permission, config('legal-governance.permissions', []), true)
+            && in_array($permission, config("legal-governance.role_permissions.{$this->role}", []), true);
     }
 
     /**

@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Middleware\ApplySeoRedirects;
 use App\Http\Middleware\EnsureEntitlement;
 use App\Http\Middleware\EnsureInternalApplicationAccess;
+use App\Http\Middleware\EnsureLegalAcceptance;
+use App\Http\Middleware\EnsureLegalPermission;
 use App\Http\Middleware\EnsureWorkspaceAccess;
-use App\Http\Middleware\ApplySeoRedirects;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
@@ -32,6 +34,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'entitlement' => EnsureEntitlement::class,
             'internal.app' => EnsureInternalApplicationAccess::class,
+            'legal.permission' => EnsureLegalPermission::class,
+            'legal.acceptance' => EnsureLegalAcceptance::class,
             'workspace' => EnsureWorkspaceAccess::class,
         ]);
     })

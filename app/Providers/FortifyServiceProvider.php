@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Http\Responses\LineWattLoginResponse;
+use App\LegalGovernance\Services\LegalWorkflowService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -69,9 +70,24 @@ class FortifyServiceProvider extends ServiceProvider
             'status' => $request->session()->get('status'),
         ]));
 
-        Fortify::registerView(fn () => Inertia::render('auth/Register', [
-            'passwordRules' => Password::defaults()->toPasswordRulesString(),
-        ]));
+        Fortify::registerView(function () {
+            $workflow = app(LegalWorkflowService::class)->resolve('registration', 'registered_users');
+            $requirements = $workflow ? app(LegalWorkflowService::class)->requirements($workflow)->map(fn ($item) => [
+                'document_public_id' => $item['version']->document->public_id,
+                'version_public_id' => $item['version']->public_id,
+                'title' => $item['version']->document->title,
+                'version' => $item['version']->version_label,
+                'url' => route('legal.show', $item['version']->document->slug),
+                'acceptance_type' => $item['requirement']->acceptance_type,
+                'required' => $item['requirement']->is_required,
+                'statement' => $item['requirement']->configuration['statement'] ?? null,
+            ])->all() : [];
+
+            return Inertia::render('auth/Register', [
+                'passwordRules' => Password::defaults()->toPasswordRulesString(),
+                'legalWorkflow' => $workflow ? ['public_id' => $workflow->public_id, 'requirements' => $requirements] : null,
+            ]);
+        });
 
         Fortify::twoFactorChallengeView(fn () => Inertia::render('auth/TwoFactorChallenge'));
 

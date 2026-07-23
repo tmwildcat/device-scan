@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import PublicSiteLayout from '@/components/linewatt/PublicSiteLayout.vue';
+import { computed } from 'vue';
 
 const props = defineProps<{
     entity: {
@@ -30,6 +32,13 @@ const props = defineProps<{
 }>();
 
 const labelize = (value?: string | null) => (value || 'Page').replace(/_/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+const structuredDataScripts = computed(() =>
+    Object.entries(props.structuredData).map(([key, data]) => ({
+        key,
+        json: JSON.stringify(data).replace(/</g, '\\u003c'),
+    })),
+);
 </script>
 
 <template>
@@ -45,10 +54,16 @@ const labelize = (value?: string | null) => (value || 'Page').replace(/_/g, ' ')
         <meta name="twitter:title" :content="seo.twitter_title || seo.title || entity.title" />
         <meta v-if="seo.twitter_description || seo.description" name="twitter:description" :content="seo.twitter_description || seo.description || ''" />
         <meta v-if="seo.twitter_image" name="twitter:image" :content="seo.twitter_image" />
-        <script v-for="(data, key) in structuredData" :key="key" type="application/ld+json">{{ JSON.stringify(data) }}</script>
+        <component
+            :is="'script'"
+            v-for="entry in structuredDataScripts"
+            :key="entry.key"
+            type="application/ld+json"
+            v-text="entry.json"
+        />
     </Head>
 
-    <main class="min-h-screen bg-slate-50">
+    <PublicSiteLayout>
         <section class="mx-auto max-w-6xl px-6 py-12">
             <div class="rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
                 <p class="text-xs font-black uppercase tracking-[0.18em] text-emerald-700">{{ labelize(entity.kind) }}</p>
@@ -93,5 +108,5 @@ const labelize = (value?: string | null) => (value || 'Page').replace(/_/g, ' ')
                 </aside>
             </div>
         </section>
-    </main>
+    </PublicSiteLayout>
 </template>

@@ -16,6 +16,8 @@ use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\Writer\SvgWriter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Response as DownloadResponse;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
@@ -23,8 +25,13 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
-class ManufacturerCompanyDataController extends Controller
+class ManufacturerCompanyDataController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [new Middleware('legal.acceptance:manufacturer.portal.access')];
+    }
+
     public function storeLogo(Request $request, LineWattStorage $storage): RedirectResponse
     {
         $company = $this->company($request);
@@ -107,7 +114,7 @@ class ManufacturerCompanyDataController extends Controller
         $slug = $company?->slug ?? str($company?->name ?? 'manufacturer')->slug()->toString();
         $url = route('manufacturers.show', ['manufacturer' => $slug]);
 
-        $writer = $format === 'svg' ? new SvgWriter() : new PngWriter();
+        $writer = $format === 'svg' ? new SvgWriter : new PngWriter;
         $result = (new Builder(
             writer: $writer,
             data: $url,

@@ -1,0 +1,81 @@
+<?php
+
+use App\LegalGovernance\Adapters\LineWattLegalIdentityResolver;
+use App\LegalGovernance\Contracts\LegalIdentityResolverContract;
+
+return [
+    'application_key' => env('LEGAL_GOVERNANCE_APPLICATION_KEY', 'linewatt-library'),
+    'default_locale' => 'en',
+    'public_route_prefix' => 'legal',
+    'admin_route_prefix' => 'admin/legal-governance',
+    'admin_navigation_group' => 'Legal Governance',
+    'source_manifest' => base_path('docs/legal/appendices/LEGAL_DOCUMENT_MANIFEST.md'),
+    'source_root' => base_path(),
+    'storage_disk' => env('LEGAL_GOVERNANCE_DISK', 'local'),
+    'storage_prefix' => 'legal-governance',
+    'checksum_algorithm' => 'sha256',
+    'capture_ip' => env('LEGAL_GOVERNANCE_CAPTURE_IP', true),
+    'integrity_stale_hours' => 48,
+    'enabled_artifacts' => ['markdown', 'html', 'plain_text', 'json', 'pdf'],
+    'identity_resolver' => LineWattLegalIdentityResolver::class,
+    'contracts' => [LegalIdentityResolverContract::class => LineWattLegalIdentityResolver::class],
+    'placeholder_patterns' => [
+        '/\[[A-Z][A-Z0-9 _\/-]{2,}\]/u',
+    ],
+    'approved_runtime_placeholders' => [],
+    'capabilities' => [
+        'platform.registered.access' => ['workflow' => 'registration', 'audience' => 'registered_users', 'blocking' => true],
+        'library.private_workspace.access' => ['workflow' => 'subscriber-checkout', 'audience' => 'subscribers', 'blocking' => true],
+        'publisher.submission' => ['workflow' => 'publisher-submission', 'audience' => 'publishers', 'blocking' => true],
+        'manufacturer.portal.access' => ['workflow' => 'manufacturer-onboarding', 'audience' => 'manufacturers', 'blocking' => true],
+        'api.private.access' => ['workflow' => 'api-mcp-access', 'audience' => 'api_clients', 'blocking' => true],
+    ],
+    'public_footer_documents' => [
+        ['slug' => 'website-terms-of-use', 'required' => true],
+        ['slug' => 'privacy-policy', 'required' => true],
+        ['slug' => 'cookie-policy', 'required' => true],
+        ['slug' => 'acceptable-use-policy', 'required' => false],
+        ['slug' => 'intellectual-property-and-licensing-policy', 'required' => false],
+    ],
+    'supported_triggers' => [
+        'registration', 'first_login', 'subscription_checkout', 'subscription_upgrade',
+        'manufacturer_invitation', 'manufacturer_activation', 'publisher_submission',
+        'employee_onboarding', 'enterprise_onboarding', 'order_execution',
+        'api_credential_issuance', 'mcp_access_grant', 'material_document_change', 'manual_assignment',
+    ],
+    'role' => 'legal_counsel',
+    'permissions' => [
+        'legal.dashboard.view', 'legal.documents.view', 'legal.documents.create', 'legal.documents.edit',
+        'legal.documents.import', 'legal.documents.compare', 'legal.versions.create',
+        'legal.versions.submit_review', 'legal.versions.review', 'legal.versions.approve',
+        'legal.versions.schedule', 'legal.versions.publish', 'legal.versions.supersede',
+        'legal.versions.withdraw', 'legal.versions.archive', 'legal.workflows.view',
+        'legal.workflows.create', 'legal.workflows.edit', 'legal.workflows.activate',
+        'legal.workflows.disable', 'legal.obligations.view', 'legal.obligations.assign',
+        'legal.obligations.waive', 'legal.acceptances.view', 'legal.acceptances.view_sensitive',
+        'legal.acceptances.export', 'legal.manifests.view', 'legal.manifests.generate',
+        'legal.manifests.export', 'legal.audit.view', 'legal.placeholders.view',
+        'legal.placeholders.manage', 'legal.settings.manage',
+        'legal.reviews.view', 'legal.publications.view', 'legal.versions.return_to_draft', 'legal.versions.cancel_schedule',
+    ],
+    'role_permissions' => [
+        'legal_publisher' => [
+            'legal.dashboard.view', 'legal.documents.view', 'legal.documents.create', 'legal.documents.edit',
+            'legal.versions.create', 'legal.versions.submit_review', 'legal.reviews.view', 'legal.publications.view',
+        ],
+        'legal_counsel' => [
+            'legal.dashboard.view', 'legal.documents.view', 'legal.documents.create', 'legal.documents.edit',
+            'legal.documents.import', 'legal.documents.compare', 'legal.versions.create',
+            'legal.versions.submit_review', 'legal.reviews.view', 'legal.publications.view', 'legal.versions.review',
+            'legal.versions.return_to_draft', 'legal.versions.approve', 'legal.versions.schedule',
+            'legal.versions.cancel_schedule', 'legal.versions.publish', 'legal.versions.supersede',
+            'legal.versions.withdraw', 'legal.versions.archive', 'legal.workflows.view',
+            'legal.workflows.create', 'legal.workflows.edit', 'legal.workflows.activate',
+            'legal.workflows.disable', 'legal.obligations.view', 'legal.obligations.assign',
+            'legal.obligations.waive', 'legal.acceptances.view', 'legal.acceptances.view_sensitive',
+            'legal.acceptances.export', 'legal.manifests.view', 'legal.manifests.generate',
+            'legal.manifests.export', 'legal.audit.view', 'legal.placeholders.view',
+            'legal.placeholders.manage', 'legal.settings.manage',
+        ],
+    ],
+];

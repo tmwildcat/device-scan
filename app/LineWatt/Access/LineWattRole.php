@@ -5,13 +5,25 @@ namespace App\LineWatt\Access;
 final class LineWattRole
 {
     public const SUPER_ADMIN = 'super_admin';
+
     public const ADMIN = 'admin';
+
     public const LIBRARIAN = 'librarian';
+
     public const LIBRARY_PUBLISHER = 'library_publisher';
+
     public const LIBRARY_CHAMPION = 'library_champion';
+
+    public const LEGAL_COUNSEL = 'legal_counsel';
+
+    public const LEGAL_PUBLISHER = 'legal_publisher';
+
     public const SUBSCRIBER = 'subscriber';
+
     public const GUEST = 'guest';
+
     public const PARTNER_ADMIN = 'partner_admin';
+
     public const PARTNER_USER = 'partner_user';
 
     /**
@@ -24,6 +36,8 @@ final class LineWattRole
             self::ADMIN,
             self::LIBRARIAN,
             self::LIBRARY_PUBLISHER,
+            self::LEGAL_COUNSEL,
+            self::LEGAL_PUBLISHER,
         ];
     }
 
@@ -46,6 +60,8 @@ final class LineWattRole
             self::LIBRARIAN => 'Librarian',
             self::LIBRARY_PUBLISHER => 'Library Publisher',
             self::LIBRARY_CHAMPION => 'Library Champion',
+            self::LEGAL_COUNSEL => 'Legal Counsel',
+            self::LEGAL_PUBLISHER => 'Legal Publisher',
             self::SUBSCRIBER => 'Subscriber',
             self::PARTNER_ADMIN => 'Manufacturer Admin',
             self::PARTNER_USER => 'Manufacturer User',

@@ -10,7 +10,6 @@ use App\Models\DeviceDatasheet;
 use App\Models\NotificationDelivery;
 use App\Models\User;
 use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -41,7 +40,8 @@ class PlatformAdminController extends Controller
                 'role_label' => LineWattRole::label(auth()->user()?->role),
                 'environment' => app()->environment(),
                 'health' => $this->systemHealthIndicator(),
-                'nav_groups' => ['Platform', 'Users & Security', 'Infrastructure'],
+                'nav_groups' => ['Platform', 'Legal Governance', 'Users & Security', 'Infrastructure'],
+                'legal_governance_href' => route('legal-governance.dashboard', absolute: false),
             ],
             'section' => $this->sectionPayload($section),
             'summary' => $this->summary(),

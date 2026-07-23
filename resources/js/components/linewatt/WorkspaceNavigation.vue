@@ -51,6 +51,7 @@ const navItems = [
     { label: () => t('nav.manufacturerAdmin'), href: '/admin/manufacturer', icon: Building2, visible: () => workspaces.value.partner === true, disabled: false },
     { label: 'Platform Admin', href: '/admin/platform', icon: ShieldCheck, visible: () => workspaces.value.platform === true, disabled: false },
     { label: () => t('nav.settings'), href: '/settings/profile', icon: Settings, visible: () => Boolean(user.value), disabled: false },
+    { label: 'Legal Status', href: '/legal-status', icon: ShieldCheck, visible: () => Boolean(user.value), disabled: false },
 ];
 const enabledNavItems = computed(() => navItems.filter((navItem) => navItem.visible() && !navItem.disabled));
 const disabledNavItems = computed(() => navItems.filter((navItem) => navItem.visible() && navItem.disabled));

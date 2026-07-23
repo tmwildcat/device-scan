@@ -12,6 +12,10 @@ import { store } from '@/routes/register';
 
 defineProps<{
     passwordRules: string;
+    legalWorkflow?: {
+        public_id: string;
+        requirements: Array<{ version_public_id: string; title: string; version: string; url: string; acceptance_type: string; required: boolean; statement?: string }>;
+    } | null;
 }>();
 
 defineOptions({
@@ -45,6 +49,18 @@ defineOptions({
                     placeholder="Full name"
                 />
                 <InputError :message="errors.name" />
+            </div>
+
+            <div v-if="legalWorkflow?.requirements.length" class="grid gap-3 rounded-md border p-4">
+                <div v-for="item in legalWorkflow.requirements" :key="item.version_public_id" class="flex items-start gap-3">
+                    <input :id="`legal-${item.version_public_id}`" type="checkbox" :required="item.required" :name="`legal_actions[${item.version_public_id}]`" value="1" class="mt-1" />
+                    <label :for="`legal-${item.version_public_id}`" class="text-sm">
+                        {{ item.statement || (item.acceptance_type === 'acknowledgement' ? 'I acknowledge' : 'I agree to') }}
+                        <a :href="item.url" target="_blank" rel="noopener" class="underline">{{ item.title }}</a>
+                        ({{ item.version }})<span v-if="!item.required"> — optional</span>
+                    </label>
+                </div>
+                <InputError :message="errors.legal_actions" />
             </div>
 
             <div class="grid gap-2">

@@ -7,11 +7,18 @@ use App\LineWatt\Access\LineWattRole;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class ManufacturerUserController extends Controller
+class ManufacturerUserController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [new Middleware('legal.acceptance:manufacturer.portal.access')];
+    }
+
     public function index(Request $request): Response
     {
         $user = $request->user();

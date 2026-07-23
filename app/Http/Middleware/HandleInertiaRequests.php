@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\LegalGovernance\Services\PublicLegalDocumentService;
 use App\LineWatt\Access\EntitlementChecker;
 use App\LineWatt\Access\LineWattRole;
 use App\Models\Notification;
@@ -71,11 +72,13 @@ class HandleInertiaRequests extends Middleware
                         'partner' => $entitlements->canAccessPartnerPortal($user),
                         'manufacturer_admin' => $entitlements->canManageManufacturerAccount($user),
                         'platform' => $entitlements->canAccessPlatformAdmin($user),
+                        'legal_governance' => $entitlements->canAccessLegalGovernance($user),
                     ],
                 ] : null,
             ],
             'locale' => $locale,
             'supported_locales' => config('linewatt-library.locales', ['en' => 'English']),
+            'publicLegalDocuments' => fn () => Schema::hasTable('legal_documents') ? app(PublicLegalDocumentService::class)->footerDocuments()->all() : [],
             'notifications' => $user && Schema::hasTable('notifications') ? [
                 'unread_count' => Notification::query()
                     ->where('user_id', $user->id)

@@ -20,6 +20,7 @@ class LineWattDemoUserSeeder extends Seeder
             ['name' => 'LineWatt Library Publisher', 'email' => 'library-publisher@linewatt.test', 'role' => LineWattRole::LIBRARY_PUBLISHER],
             ['name' => 'Demo Library Champion One', 'email' => 'library-champion@linewatt.test', 'role' => LineWattRole::LIBRARY_CHAMPION],
             ['name' => 'Demo Library Champion Two', 'email' => 'library-champion-2@linewatt.test', 'role' => LineWattRole::LIBRARY_CHAMPION],
+            ['name' => 'LineWatt Registered User', 'email' => 'registered@linewatt.test', 'role' => LineWattRole::GUEST],
             ['name' => 'LineWatt Subscriber', 'email' => 'subscriber@linewatt.test', 'role' => LineWattRole::SUBSCRIBER],
             ['name' => 'Partner Admin', 'email' => 'partner-admin@linewatt.test', 'role' => LineWattRole::PARTNER_ADMIN],
             ['name' => 'Partner User', 'email' => 'partner-user@linewatt.test', 'role' => LineWattRole::PARTNER_USER],
@@ -30,7 +31,7 @@ class LineWattDemoUserSeeder extends Seeder
                 ['email' => $user['email']],
                 [
                     'name' => $user['name'],
-                    'password' => Hash::make('password'),
+                    'password' => Hash::make(env('DEMO_USER_PASSWORD', 'password')),
                     'email_verified_at' => now(),
                     'role' => $user['role'],
                     'plan_code' => $this->planCodeFor($user['role']),
@@ -58,7 +59,7 @@ class LineWattDemoUserSeeder extends Seeder
                     'champion_id' => $champion?->id,
                     'referral_code' => $champion?->referral_code,
                     'referred_at' => $champion ? now() : null,
-                'metadata' => [
+                    'metadata' => [
                         'logo_placeholder' => true,
                         'manufacturer_aliases' => $companyData['aliases'],
                     ],
@@ -70,7 +71,7 @@ class LineWattDemoUserSeeder extends Seeder
                     ['email' => $user['email']],
                     [
                         'name' => $user['name'],
-                        'password' => Hash::make('password'),
+                        'password' => Hash::make(env('DEMO_USER_PASSWORD', 'password')),
                         'email_verified_at' => now(),
                         'role' => $user['manufacturer_role'] === 'manufacturer_admin'
                             ? LineWattRole::PARTNER_ADMIN

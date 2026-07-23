@@ -10,6 +10,7 @@ return [
         LineWattRole::LIBRARIAN,
         LineWattRole::LIBRARY_PUBLISHER,
         LineWattRole::LIBRARY_CHAMPION,
+        LineWattRole::LEGAL_COUNSEL,
         LineWattRole::SUBSCRIBER,
         LineWattRole::GUEST,
         LineWattRole::PARTNER_ADMIN,
@@ -58,6 +59,10 @@ return [
             Entitlement::LIBRARY_PUBLISHER_WORKFLOW,
         ],
         LineWattRole::LIBRARY_CHAMPION => [
+            Entitlement::LIBRARY_SEARCH,
+            Entitlement::LIBRARY_VIEW_RECORD,
+        ],
+        LineWattRole::LEGAL_COUNSEL => [
             Entitlement::LIBRARY_SEARCH,
             Entitlement::LIBRARY_VIEW_RECORD,
         ],

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AdPromotionPlayer from '@/components/linewatt/AdPromotionPlayer.vue';
 import EngineeringSearchBar from '@/components/linewatt/EngineeringSearchBar.vue';
-import WorkspaceNavigation from '@/components/linewatt/WorkspaceNavigation.vue';
+import PublicSiteLayout from '@/components/linewatt/PublicSiteLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ArrowRight, BadgeCheck, Clock3, DatabaseZap, Factory, GitCompare, Layers3, ShieldCheck } from 'lucide-vue-next';
 
@@ -24,10 +24,7 @@ defineProps<{
 <template>
     <Head title="LineWatt Library" />
 
-    <div class="min-h-screen bg-slate-50 text-slate-950">
-        <WorkspaceNavigation />
-
-        <main>
+    <PublicSiteLayout>
             <section class="border-b border-slate-200 bg-white">
                 <div class="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_320px] lg:px-8 lg:py-20">
                     <div>
@@ -214,6 +211,5 @@ defineProps<{
                     </div>
                 </div>
             </section>
-        </main>
-    </div>
+    </PublicSiteLayout>
 </template>

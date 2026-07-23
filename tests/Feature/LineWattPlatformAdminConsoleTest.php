@@ -27,8 +27,9 @@ it('exposes the expected platform sidebar groups to the page shell', function ()
         ->assertInertia(fn ($page) => $page
             ->component('LineWatt/PlatformAdmin')
             ->where('workspace.nav_groups.0', 'Platform')
-            ->where('workspace.nav_groups.1', 'Users & Security')
-            ->where('workspace.nav_groups.2', 'Infrastructure')
+            ->where('workspace.nav_groups.1', 'Legal Governance')
+            ->where('workspace.nav_groups.2', 'Users & Security')
+            ->where('workspace.nav_groups.3', 'Infrastructure')
         );
 });
 

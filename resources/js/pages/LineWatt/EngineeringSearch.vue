@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import WorkspaceNavigation from '@/components/linewatt/WorkspaceNavigation.vue';
+import PublicSiteLayout from '@/components/linewatt/PublicSiteLayout.vue';
 import { useLineWattI18n } from '@/lib/linewatt-i18n';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, reactive, ref } from 'vue';
@@ -242,10 +242,8 @@ function runPowerTag(slug: string): void {
 <template>
     <Head :title="title" />
 
-    <div class="min-h-screen bg-slate-50 text-slate-950" :dir="dir">
-        <WorkspaceNavigation />
-
-        <main class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <PublicSiteLayout :dir="dir">
+        <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
             <section class="rounded-lg border border-slate-200 bg-white p-7 shadow-sm sm:p-9">
                 <p class="text-sm font-bold uppercase tracking-[0.18em] text-emerald-700">
                     LineWatt Library
@@ -434,6 +432,6 @@ function runPowerTag(slug: string): void {
                     </div>
                 </form>
             </section>
-        </main>
-    </div>
+        </div>
+    </PublicSiteLayout>
 </template>

@@ -1,30 +1,35 @@
 <?php
 
-use App\Http\Controllers\DeviceScan\Debug\ModuleCompilerDebugController;
 use App\Http\Controllers\DeviceScan\Debug\InverterCompilerDebugController;
-use App\Http\Controllers\LineWatt\EngineeringRecordController;
-use App\Http\Controllers\LineWatt\EngineeringRecordExportController;
-use App\Http\Controllers\LineWatt\EngineeringSearchController;
+use App\Http\Controllers\DeviceScan\Debug\ModuleCompilerDebugController;
+use App\Http\Controllers\LegalAcceptanceController;
+use App\Http\Controllers\LegalGovernance\LegalCounselController;
+use App\Http\Controllers\LegalGovernance\LegalOperationsController;
+use App\Http\Controllers\LegalGovernance\PublicLegalPortalController;
+use App\Http\Controllers\LineWatt\BusinessAdminController;
 use App\Http\Controllers\LineWatt\CentralLibraryController;
 use App\Http\Controllers\LineWatt\CentralReviewController;
 use App\Http\Controllers\LineWatt\ChampionDashboardController;
-use App\Http\Controllers\LineWatt\BusinessAdminController;
 use App\Http\Controllers\LineWatt\CompareController;
-use App\Http\Controllers\LineWatt\ComparisonExportController;
 use App\Http\Controllers\LineWatt\CompareSelectController;
+use App\Http\Controllers\LineWatt\ComparisonExportController;
 use App\Http\Controllers\LineWatt\DashboardRedirectController;
 use App\Http\Controllers\LineWatt\DatasheetReviewController;
+use App\Http\Controllers\LineWatt\EngineeringRecordController;
+use App\Http\Controllers\LineWatt\EngineeringRecordExportController;
+use App\Http\Controllers\LineWatt\EngineeringSearchController;
 use App\Http\Controllers\LineWatt\HomeController;
 use App\Http\Controllers\LineWatt\InternalAppAccessController;
+use App\Http\Controllers\LineWatt\LibraryChampionAdminController;
+use App\Http\Controllers\LineWatt\LibraryMemberController;
+use App\Http\Controllers\LineWatt\LibraryPublisherAdminController;
+use App\Http\Controllers\LineWatt\ManufacturerCompanyDataController;
+use App\Http\Controllers\LineWatt\ManufacturerProductController;
+use App\Http\Controllers\LineWatt\ManufacturerUpgradeController;
+use App\Http\Controllers\LineWatt\ManufacturerUserController;
 use App\Http\Controllers\LineWatt\MyLibraryController;
 use App\Http\Controllers\LineWatt\MyLibraryReviewQueueController;
 use App\Http\Controllers\LineWatt\MyLibraryStorageController;
-use App\Http\Controllers\LineWatt\ManufacturerProductController;
-use App\Http\Controllers\LineWatt\ManufacturerCompanyDataController;
-use App\Http\Controllers\LineWatt\ManufacturerUpgradeController;
-use App\Http\Controllers\LineWatt\ManufacturerUserController;
-use App\Http\Controllers\LineWatt\LibraryMemberController;
-use App\Http\Controllers\LineWatt\LibraryPublisherAdminController;
 use App\Http\Controllers\LineWatt\NotificationController;
 use App\Http\Controllers\LineWatt\OemSubscriberController;
 use App\Http\Controllers\LineWatt\PartnerPortalController;
@@ -36,20 +41,23 @@ use App\Http\Controllers\LineWatt\PowerSearchAdminController;
 use App\Http\Controllers\LineWatt\PromotionController;
 use App\Http\Controllers\LineWatt\PublisherWorkspaceController;
 use App\Http\Controllers\LineWatt\PvsystImportController;
-use App\Http\Controllers\LineWatt\LibraryChampionAdminController;
 use App\Http\Controllers\LineWatt\SeoDiscoveryAdminController;
 use App\Http\Controllers\LineWatt\SeoPublicController;
 use App\Http\Controllers\LineWatt\SeoSitemapController;
-use App\Http\Controllers\LineWatt\UploadController;
 use App\Http\Controllers\LineWatt\UploadCompiledRecordsController;
-use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
+use App\Http\Controllers\LineWatt\UploadController;
+use App\Models\ManufacturerCompany;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Illuminate\Support\Facades\Route;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 Route::get('/', HomeController::class)->name('home');
+Route::get('/legal', [PublicLegalPortalController::class, 'index'])->name('legal.index');
+Route::get('/legal/{slug}/artifacts/{version}/{type}', [PublicLegalPortalController::class, 'artifact'])->middleware('throttle:30,1')->name('legal.artifact');
+Route::get('/legal/{slug}/{version?}', [PublicLegalPortalController::class, 'show'])->name('legal.show');
 Route::get('/sitemap.xml', [SeoSitemapController::class, 'index'])->name('seo.sitemap');
 Route::get('/manufacturers.xml', [SeoSitemapController::class, 'manufacturers'])->name('seo.sitemap.manufacturers');
 Route::get('/datasheets.xml', [SeoSitemapController::class, 'datasheets'])->name('seo.sitemap.datasheets');
@@ -123,7 +131,43 @@ Route::get('/device-scan/debug/inverter-compiler', InverterCompilerDebugControll
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
+    Route::get('/legal-status', [LegalAcceptanceController::class, 'status'])->name('legal.status');
+    Route::get('/legal/acceptance', [LegalAcceptanceController::class, 'index'])->name('legal.acceptance.index');
+    Route::post('/legal/acceptance/{obligation}', [LegalAcceptanceController::class, 'accept'])->name('legal.acceptance.store');
+
+    Route::prefix('admin/legal-governance')->name('legal-governance.')->group(function (): void {
+        Route::get('/', [LegalCounselController::class, 'dashboard'])->middleware('legal.permission:legal.dashboard.view')->name('dashboard');
+        Route::get('/documents', [LegalCounselController::class, 'documents'])->middleware('legal.permission:legal.documents.view')->name('documents');
+        Route::get('/versions/{version}/edit', [LegalCounselController::class, 'edit'])->middleware('legal.permission:legal.documents.edit')->name('versions.edit');
+        Route::put('/versions/{version}', [LegalCounselController::class, 'update'])->middleware('legal.permission:legal.documents.edit')->name('versions.update');
+        Route::post('/versions/{version}/submit-review', [LegalOperationsController::class, 'submitReview'])->middleware('legal.permission:legal.versions.submit_review')->name('versions.submit-review');
+        Route::post('/versions/{version}/reviews', [LegalOperationsController::class, 'decision'])->middleware('legal.permission:legal.versions.review')->name('reviews.store');
+        Route::post('/versions/{version}/approve', [LegalOperationsController::class, 'approve'])->middleware('legal.permission:legal.versions.approve')->name('versions.approve');
+        Route::get('/reviews', [LegalOperationsController::class, 'reviews'])->middleware('legal.permission:legal.reviews.view')->name('reviews.index');
+        Route::get('/reviews/{version}', [LegalOperationsController::class, 'review'])->middleware('legal.permission:legal.reviews.view')->name('reviews.show');
+        Route::post('/versions/{version}/return-to-draft', [LegalOperationsController::class, 'returnToDraft'])->middleware('legal.permission:legal.versions.return_to_draft')->name('versions.return-to-draft');
+        Route::get('/publications', [LegalOperationsController::class, 'publications'])->middleware('legal.permission:legal.publications.view')->name('publications.index');
+        Route::post('/versions/{version}/schedule', [LegalOperationsController::class, 'schedule'])->middleware('legal.permission:legal.versions.schedule')->name('versions.schedule');
+        Route::delete('/versions/{version}/schedule', [LegalOperationsController::class, 'cancelSchedule'])->middleware('legal.permission:legal.versions.cancel_schedule')->name('versions.schedule.cancel');
+        Route::post('/versions/{version}/publish', [LegalOperationsController::class, 'publish'])->middleware('legal.permission:legal.versions.publish')->name('versions.publish');
+        Route::post('/versions/{version}/withdraw', [LegalOperationsController::class, 'withdraw'])->middleware('legal.permission:legal.versions.withdraw')->name('versions.withdraw');
+        Route::post('/versions/{version}/archive', [LegalOperationsController::class, 'archive'])->middleware('legal.permission:legal.versions.archive')->name('versions.archive');
+        Route::get('/workflows', [LegalOperationsController::class, 'workflows'])->middleware('legal.permission:legal.workflows.view')->name('workflows.index');
+        Route::get('/workflows/{workflow}', [LegalOperationsController::class, 'workflow'])->middleware('legal.permission:legal.workflows.view')->name('workflows.show');
+        Route::put('/workflows/{workflow}', [LegalOperationsController::class, 'updateWorkflow'])->middleware('legal.permission:legal.workflows.edit')->name('workflows.update');
+        Route::post('/workflows/{workflow}/requirements', [LegalOperationsController::class, 'storeWorkflowRequirement'])->middleware('legal.permission:legal.workflows.edit')->name('workflows.requirements.store');
+        Route::delete('/workflows/{workflow}/requirements/{requirement}', [LegalOperationsController::class, 'destroyWorkflowRequirement'])->middleware('legal.permission:legal.workflows.edit')->name('workflows.requirements.destroy');
+        Route::post('/workflows/{workflow}/activate', [LegalOperationsController::class, 'activateWorkflow'])->middleware('legal.permission:legal.workflows.activate')->name('workflows.activate');
+        Route::get('/evidence-exports', [LegalOperationsController::class, 'evidence'])->middleware('legal.permission:legal.acceptances.export')->name('evidence-exports.index');
+        Route::post('/evidence-exports', [LegalOperationsController::class, 'exportEvidence'])->middleware('legal.permission:legal.acceptances.export')->name('evidence-exports.store');
+        Route::get('/placeholders', [LegalOperationsController::class, 'placeholders'])->middleware('legal.permission:legal.placeholders.view')->name('placeholders.index');
+        Route::patch('/placeholders/{placeholder}', [LegalOperationsController::class, 'updatePlaceholder'])->middleware('legal.permission:legal.placeholders.manage')->name('placeholders.update');
+        Route::get('/settings', [LegalOperationsController::class, 'settings'])->middleware('legal.permission:legal.settings.manage')->name('settings');
+        Route::get('/{section}', [LegalCounselController::class, 'section'])->middleware('legal.permission:legal.dashboard.view')->name('section');
+    });
+
     Route::get('/dashboard', DashboardRedirectController::class)
+        ->middleware('legal.acceptance:platform.registered.access')
         ->name('dashboard');
 
     Route::get('/champion', [ChampionDashboardController::class, 'index'])
@@ -133,7 +177,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('champion.manufacturers.show');
 
     Route::get('/my-library', MyLibraryController::class)
-        ->middleware('workspace:my-library')
+        ->middleware(['workspace:my-library', 'legal.acceptance:library.private_workspace.access'])
         ->name('my-library');
 
     Route::get('/my-library/review-queue', MyLibraryReviewQueueController::class)
@@ -141,16 +185,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('my-library.review-queue');
 
     Route::get('/my-library/storage', MyLibraryStorageController::class)
-        ->middleware('workspace:my-library')
+        ->middleware(['workspace:my-library', 'legal.acceptance:library.private_workspace.access'])
         ->name('my-library.storage');
 
     Route::delete('/my-library/storage/items/{item}', [MyLibraryStorageController::class, 'destroy'])
         ->where('item', '.*')
-        ->middleware('workspace:my-library')
+        ->middleware(['workspace:my-library', 'legal.acceptance:library.private_workspace.access'])
         ->name('my-library.storage.items.destroy');
 
     Route::delete('/my-library/storage/items', [MyLibraryStorageController::class, 'destroySelected'])
-        ->middleware('workspace:my-library')
+        ->middleware(['workspace:my-library', 'legal.acceptance:library.private_workspace.access'])
         ->name('my-library.storage.items.destroy-selected');
 
     Route::get('/upload', UploadController::class)
@@ -168,15 +212,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('uploads.manufacturers');
 
     Route::get('/my-library/uploads/new', [UploadController::class, 'createSubscriber'])
-        ->middleware('entitlement:library.private_upload')
+        ->middleware(['entitlement:library.private_upload', 'legal.acceptance:library.private_workspace.access'])
         ->name('my-library.uploads.new');
 
     Route::post('/my-library/uploads', [UploadController::class, 'storeSubscriber'])
-        ->middleware('entitlement:library.private_upload')
+        ->middleware(['entitlement:library.private_upload', 'legal.acceptance:library.private_workspace.access'])
         ->name('my-library.uploads.store');
 
     Route::post('/my-library/pvsyst-import', [PvsystImportController::class, 'store'])
-        ->middleware('entitlement:library.private_upload')
+        ->middleware(['entitlement:library.private_upload', 'legal.acceptance:library.private_workspace.access'])
         ->name('my-library.pvsyst-import.store');
 
     Route::get('/admin/library', CentralLibraryController::class)
@@ -361,7 +405,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('entitlement:central.manage')
         ->name('admin.library.oems');
 
-    Route::get('/admin/library/oems/{oem}', fn (\App\Models\ManufacturerCompany $oem) => redirect()->route('admin.library.oem-subscribers.show', ['subscriber' => $oem]))
+    Route::get('/admin/library/oems/{oem}', fn (ManufacturerCompany $oem) => redirect()->route('admin.library.oem-subscribers.show', ['subscriber' => $oem]))
         ->middleware('entitlement:central.manage')
         ->name('admin.library.oems.show');
 
@@ -520,7 +564,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('publisher.uploads.new');
 
     Route::post('/publisher/uploads', [UploadController::class, 'storePublisher'])
-        ->middleware('workspace:publisher')
+        ->middleware(['workspace:publisher', 'legal.acceptance:publisher.submission'])
         ->name('publisher.uploads.store');
 
     Route::get('/publisher/datasheets/{datasheet}/review', [DatasheetReviewController::class, 'publisher'])
@@ -532,11 +576,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('publisher.datasheets.review.source-pdf');
 
     Route::patch('/publisher/datasheets/{datasheet}/review', [DatasheetReviewController::class, 'savePublisher'])
-        ->middleware('workspace:publisher')
+        ->middleware(['workspace:publisher', 'legal.acceptance:publisher.submission'])
         ->name('publisher.datasheets.review.save');
 
     Route::post('/publisher/datasheets/{datasheet}/review/submit', [DatasheetReviewController::class, 'submitPublisher'])
-        ->middleware('workspace:publisher')
+        ->middleware(['workspace:publisher', 'legal.acceptance:publisher.submission'])
         ->name('publisher.datasheets.review.submit');
 
     Route::get('/publisher/review', [PublisherWorkspaceController::class, 'review'])
@@ -568,11 +612,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('publisher.review.source-pdf');
 
     Route::patch('/publisher/review/{record}', [CentralReviewController::class, 'savePublisher'])
-        ->middleware('workspace:publisher')
+        ->middleware(['workspace:publisher', 'legal.acceptance:publisher.submission'])
         ->name('publisher.review.save');
 
     Route::post('/publisher/review/{record}/submit', [CentralReviewController::class, 'submitForApproval'])
-        ->middleware('workspace:publisher')
+        ->middleware(['workspace:publisher', 'legal.acceptance:publisher.submission'])
         ->name('publisher.review.submit');
 
     Route::get('/central-engineering', fn () => redirect()->route('admin.library'))
@@ -580,7 +624,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('central-engineering');
 
     Route::get('/admin/manufacturer', PartnerPortalController::class)
-        ->middleware('workspace:partner')
+        ->middleware(['workspace:partner', 'legal.acceptance:manufacturer.portal.access'])
         ->name('admin.manufacturer');
 
     Route::get('/admin/manufacturer/company/profile', [ManufacturerProductController::class, 'companyProfile'])
@@ -588,7 +632,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('admin.manufacturer.company.profile');
 
     Route::post('/admin/manufacturer/company/profile/logo', [ManufacturerCompanyDataController::class, 'storeLogo'])
-        ->middleware('workspace:partner')
+        ->middleware(['workspace:partner', 'legal.acceptance:manufacturer.portal.access'])
         ->name('admin.manufacturer.company.profile.logo.store');
 
     Route::delete('/admin/manufacturer/company/profile/logo', [ManufacturerCompanyDataController::class, 'destroyLogo'])
@@ -733,7 +777,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('admin.manufacturer.datasheets.review.save');
 
     Route::post('/admin/manufacturer/datasheets/{datasheet}/review/submit', [DatasheetReviewController::class, 'submitManufacturer'])
-        ->middleware('workspace:partner')
+        ->middleware(['workspace:partner', 'legal.acceptance:manufacturer.portal.access'])
         ->name('admin.manufacturer.datasheets.review.submit');
 
     Route::get('/admin/manufacturer/engineering-data/{record}/review', [CentralReviewController::class, 'manufacturer'])
@@ -749,7 +793,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('admin.manufacturer.engineering-data.review.save');
 
     Route::post('/admin/manufacturer/engineering-data/{record}/review/submit', [CentralReviewController::class, 'submitForApproval'])
-        ->middleware('workspace:partner')
+        ->middleware(['workspace:partner', 'legal.acceptance:manufacturer.portal.access'])
         ->name('admin.manufacturer.engineering-data.review.submit');
 
     Route::get('/admin/manufacturer/users', [ManufacturerUserController::class, 'index'])
@@ -948,72 +992,72 @@ Route::middleware(['auth', 'verified'])->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::prefix('library')
-    ->name('library.')
-    ->group(function () {
+        ->name('library.')
+        ->group(function () {
 
-        Route::get('/', fn () => redirect()->route('engineering-search'))
-            ->name('index');
+            Route::get('/', fn () => redirect()->route('engineering-search'))
+                ->name('index');
 
-        /*
+            /*
         |--------------------------------------------------------------------------
         | Equipment
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/equipment/modules', fn () => redirect()->route('engineering-search', ['device_type' => 'module']))
-            ->name('equipment.modules');
+            Route::get('/equipment/modules', fn () => redirect()->route('engineering-search', ['device_type' => 'module']))
+                ->name('equipment.modules');
 
-        Route::get('/equipment/string-inverters', fn () => redirect()->route('engineering-search', ['device_type' => 'inverter']))
-            ->name('equipment.string-inverters');
+            Route::get('/equipment/string-inverters', fn () => redirect()->route('engineering-search', ['device_type' => 'inverter']))
+                ->name('equipment.string-inverters');
 
-        Route::get('/equipment/central-inverters', fn () => redirect()->route('engineering-search', ['device_type' => 'inverter']))
-            ->name('equipment.central-inverters');
+            Route::get('/equipment/central-inverters', fn () => redirect()->route('engineering-search', ['device_type' => 'inverter']))
+                ->name('equipment.central-inverters');
 
-        /*
+            /*
         |--------------------------------------------------------------------------
         | Import
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/import/module', DashboardRedirectController::class)
-            ->name('import.module');
+            Route::get('/import/module', DashboardRedirectController::class)
+                ->name('import.module');
 
-        Route::get('/import/string-inverter', DashboardRedirectController::class)
-            ->name('import.string-inverter');
+            Route::get('/import/string-inverter', DashboardRedirectController::class)
+                ->name('import.string-inverter');
 
-        Route::get('/import/central-inverter', DashboardRedirectController::class)
-            ->name('import.central-inverter');
+            Route::get('/import/central-inverter', DashboardRedirectController::class)
+                ->name('import.central-inverter');
 
-        Route::post('/import', fn () => abort(410, 'Upload is coming in the next milestone.'))
-            ->name('import.store');
+            Route::post('/import', fn () => abort(410, 'Upload is coming in the next milestone.'))
+                ->name('import.store');
 
-        Route::get('/review/{deviceType}', fn () => redirect()->route('central-library'))
-            ->name('review');
+            Route::get('/review/{deviceType}', fn () => redirect()->route('central-library'))
+                ->name('review');
 
-        Route::get('/preview', fn () => abort(410, 'Preview is coming in the next milestone.'))
-            ->name('preview');
+            Route::get('/preview', fn () => abort(410, 'Preview is coming in the next milestone.'))
+                ->name('preview');
 
-        Route::get('/preview-image', fn () => abort(410, 'Preview is coming in the next milestone.'))
-            ->name('preview-image');
+            Route::get('/preview-image', fn () => abort(410, 'Preview is coming in the next milestone.'))
+                ->name('preview-image');
 
-        /*
+            /*
         |--------------------------------------------------------------------------
         | Export
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/export', DashboardRedirectController::class)
-            ->name('export');
+            Route::get('/export', DashboardRedirectController::class)
+                ->name('export');
 
-        /*
+            /*
         |--------------------------------------------------------------------------
         | Compare
         |--------------------------------------------------------------------------
         */
 
-        Route::get('/compare', fn () => redirect()->route('compare'))
-            ->name('compare');
-    });
+            Route::get('/compare', fn () => redirect()->route('compare'))
+                ->name('compare');
+        });
 
     /*
     |--------------------------------------------------------------------------

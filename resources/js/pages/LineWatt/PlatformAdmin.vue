@@ -30,6 +30,7 @@ const props = defineProps<{
         role_label?: string | null;
         environment?: string | null;
         health?: string | null;
+        legal_governance_href: string;
     };
     section: {
         key: string;
@@ -92,6 +93,7 @@ const dashboardSummary = [
         :role-label="workspace.role_label"
         :environment="workspace.environment"
         :health="workspace.health"
+        :legal-governance-href="workspace.legal_governance_href"
         :breadcrumbs="[
             { label: 'Platform', href: '/admin/platform' },
             { label: section.title },

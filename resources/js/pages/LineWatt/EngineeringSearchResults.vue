@@ -2,7 +2,7 @@
 import EngineeringRecordCard from '@/components/linewatt/EngineeringRecordCard.vue';
 import EngineeringRecordTable from '@/components/linewatt/EngineeringRecordTable.vue';
 import PlaceholderAction from '@/components/linewatt/PlaceholderAction.vue';
-import WorkspaceNavigation from '@/components/linewatt/WorkspaceNavigation.vue';
+import PublicSiteLayout from '@/components/linewatt/PublicSiteLayout.vue';
 import { useLineWattI18n } from '@/lib/linewatt-i18n';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -303,10 +303,8 @@ function openCompareSelector(record: any): void {
 <template>
     <Head :title="t('results.headTitle')" />
 
-    <div class="min-h-screen bg-slate-50 text-slate-950" :dir="dir">
-        <WorkspaceNavigation />
-
-        <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <PublicSiteLayout :dir="dir">
+        <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <section class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div>
@@ -416,6 +414,6 @@ function openCompareSelector(record: any): void {
                     v-html="link.label"
                 />
             </nav>
-        </main>
-    </div>
+        </div>
+    </PublicSiteLayout>
 </template>

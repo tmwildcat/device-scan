@@ -12,6 +12,8 @@ use App\Models\ManufacturerCompany;
 use App\Models\ManufacturerSupportingDocument;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -19,9 +21,14 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
-class ManufacturerProductController extends Controller
+class ManufacturerProductController extends Controller implements HasMiddleware
 {
     use BuildsEngineeringRecordPayloads;
+
+    public static function middleware(): array
+    {
+        return [new Middleware('legal.acceptance:manufacturer.portal.access')];
+    }
 
     public function companyProfile(Request $request): Response
     {
@@ -602,7 +609,7 @@ class ManufacturerProductController extends Controller
     }
 
     /**
-     * @param array<string,mixed> $metadata
+     * @param  array<string,mixed>  $metadata
      * @return array<int,array<string,string>>
      */
     private function previewContactRows(Request $request, array $metadata): array
